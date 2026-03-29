@@ -16,7 +16,7 @@
 
 import { Hono } from "hono";
 import type { Env, AppVariables } from "../types";
-import { getCredits } from "../services/credits";
+import { getCredits, deductCredits } from "../services/credits";
 
 /**
  * Create a Hono router for credit endpoints.
@@ -51,6 +51,23 @@ creditRoutes.get("/", async (c) => {
     plan: credits.plan,
     periodEnd: credits.periodEnd,
     isUnlimited: credits.remaining === -1,
+  });
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/credits/deduct — Deduct credits after AI generation
+// ---------------------------------------------------------------------------
+
+creditRoutes.post("/deduct", async (c) => {
+  const userId = c.var.userId;
+  const { cost } = await c.req.json<{ cost: number }>();
+  if (!cost || cost < 1) {
+    return c.json({ error: "Invalid cost", code: "VALIDATION_ERROR" }, 400);
+  }
+  const updated = await deductCredits(userId, cost, c.env);
+  return c.json({
+    remaining: updated.remaining,
+    isUnlimited: updated.remaining === -1,
   });
 });
 

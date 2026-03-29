@@ -45,8 +45,16 @@ const app = new Hono<{ Bindings: Env; Variables: AppVariables }>();
  */
 app.use("*", async (c, next) => {
   const allowedOrigin = c.env.FRONTEND_URL ?? "http://localhost:3000";
+  const requestOrigin = c.req.header("Origin") ?? "";
+
+  // Support comma-separated list of allowed origins
+  const allowedOrigins = allowedOrigin.split(",").map((o) => o.trim());
+  const origin = allowedOrigins.includes(requestOrigin)
+    ? requestOrigin
+    : allowedOrigins[0];
+
   const middleware = cors({
-    origin: [allowedOrigin],
+    origin: [origin],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     maxAge: 600,

@@ -567,9 +567,10 @@ export default function EditorPage({
           throw new Error("Not authenticated");
         }
 
-        // Make the streaming request to the chat endpoint
+        // Make the streaming request to the Next.js chat API route
+        // (avoids Cloudflare Worker CPU time limits on the free plan)
         const response = await fetch(
-          `${WORKER_URL}/api/chat/${projectId}`,
+          `/api/chat/${projectId}`,
           {
             method: "POST",
             headers: {

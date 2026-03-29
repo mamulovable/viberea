@@ -554,6 +554,67 @@ chatRoutes.post("/:projectId", async (c) => {
 });
 
 // ---------------------------------------------------------------------------
+// POST /api/chat/:projectId/history — Save chat messages (called by Next.js route)
+// ---------------------------------------------------------------------------
+
+chatRoutes.post("/:projectId/history", async (c) => {
+  const userId = c.var.userId;
+  const projectId = c.req.param("projectId");
+
+  const project = await c.env.METADATA.get<Project>(`project:${projectId}`, "json");
+  if (!project) return c.json({ error: "Project not found", code: "NOT_FOUND" }, 404);
+  if (project.userId !== userId) return c.json({ error: "Access denied", code: "FORBIDDEN" }, 403);
+
+  const { messages, currentVersion } = await c.req.json<{
+    messages: ChatMessage[];
+    currentVersion?: number;
+  }>();
+
+  // Update project version if provided
+  if (currentVersion !== undefined && currentVersion > project.currentVersion) {
+    project.currentVersion = currentVersion;
+    project.updatedAt = new Date().toISOString();
+    await c.env.METADATA.put(`project:${projectId}`, JSON.stringify(project));
+  }
+
+  const chatSession: ChatSession = {
+    projectId,
+    messages,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  await c.env.METADATA.put(`chat:${projectId}`, JSON.stringify(chatSession));
+  return c.json({ success: true });
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/chat/:projectId/version — Save a new version (called by Next.js route)
+// ---------------------------------------------------------------------------
+
+chatRoutes.post("/:projectId/version", async (c) => {
+  const userId = c.var.userId;
+  const projectId = c.req.param("projectId");
+
+  const project = await c.env.METADATA.get<Project>(`project:${projectId}`, "json");
+  if (!project) return c.json({ error: "Project not found", code: "NOT_FOUND" }, 404);
+  if (project.userId !== userId) return c.json({ error: "Access denied", code: "FORBIDDEN" }, 403);
+
+  const { version } = await c.req.json<{ version: Version }>();
+
+  await c.env.FILES.put(
+    `${projectId}/v${version.versionNumber}/files.json`,
+    JSON.stringify(version)
+  );
+
+  project.currentVersion = version.versionNumber;
+  project.updatedAt = new Date().toISOString();
+  await c.env.METADATA.put(`project:${projectId}`, JSON.stringify(project));
+
+  return c.json({ success: true, versionNumber: version.versionNumber });
+});
+
+// ---------------------------------------------------------------------------
 // GET /api/chat/:projectId — Get chat history
 // ---------------------------------------------------------------------------
 
