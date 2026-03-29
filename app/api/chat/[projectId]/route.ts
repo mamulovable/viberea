@@ -100,11 +100,11 @@ export async function POST(
     return new Response(JSON.stringify({ error: "No token" }), { status: 401 });
   }
 
-  const body = await req.json<{
+  const body = await req.json() as {
     message: string;
     model?: string;
     images?: ImageAttachment[];
-  }>();
+  };
 
   const userMessage = sanitizeChatMessage(body.message || "");
   if (!userMessage) {
