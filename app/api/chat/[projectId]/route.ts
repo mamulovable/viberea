@@ -207,7 +207,7 @@ export async function POST(
           model,
           system: systemPrompt,
           messages: sdkMessages as Parameters<typeof streamText>[0]["messages"],
-          maxTokens: modelConfig.maxOutputTokens,
+          maxOutputTokens: modelConfig.maxOutputTokens,
         });
 
         let fullResponse = "";
