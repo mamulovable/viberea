@@ -65,7 +65,6 @@ function getModel(modelId: string): LanguageModel {
       return createOpenAI({
         apiKey: process.env.OPENROUTER_API_KEY!,
         baseURL: "https://openrouter.ai/api/v1",
-        compatibility: "compatible",
       }).chat(config.apiModelId);
     default:
       throw new Error(`Provider not implemented: ${config.provider}`);
