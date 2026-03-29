@@ -14,7 +14,7 @@
 
 import { NextRequest } from "next/server";
 import { getAuth } from "@clerk/nextjs/server";
-import { streamText } from "ai";
+import { streamText, type ModelMessage } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -206,7 +206,7 @@ export async function POST(
         const result = streamText({
           model,
           system: systemPrompt,
-          messages: sdkMessages as Parameters<typeof streamText>[0]["messages"],
+          messages: sdkMessages as ModelMessage[],
           maxOutputTokens: modelConfig.maxOutputTokens,
         });
 
