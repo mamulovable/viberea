@@ -155,6 +155,20 @@ export const MODELS: ModelInfo[] = [
       "ZhipuAI's GLM-5 via OpenRouter. Strong multilingual and coding capabilities.",
     supportsVision: false,
   },
+
+  // --- Google (via OpenRouter) ---
+  {
+    id: "gemini-3-5-flash",
+    name: "Gemini 3.5 Flash",
+    provider: "google",
+    tier: "fast",
+    speed: "very-fast",
+    quality: "good",
+    creditCost: 1,
+    description:
+      "Google's Gemini 3.5 Flash via OpenRouter. Ultra-fast with strong coding capabilities.",
+    supportsVision: true,
+  },
 ];
 
 /**

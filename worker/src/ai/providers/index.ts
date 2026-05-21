@@ -6,7 +6,7 @@
  * we use the AI SDK's `streamText()` which handles all provider differences
  * behind a single `getModel()` function.
  *
- * Supports 9 models across 5 providers:
+ * Supports 10 models across 5 providers:
  * - Anthropic: Claude Sonnet 4.5, Claude Haiku 3.5
  * - OpenAI: GPT-4o, GPT-4o Mini
  * - Google: Gemini 2.0 Flash, Gemini 2.0 Pro
@@ -185,6 +185,21 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
     supportsVision: false,
     maxOutputTokens: 8192,
   },
+
+  // --- Google (via OpenRouter) ---
+  "gemini-3-5-flash": {
+    provider: "openrouter",
+    displayName: "Gemini 3.5 Flash",
+    apiModelId: "google/gemini-3.5-flash",
+    creditCost: 1,
+    tier: "fast",
+    speed: "very-fast",
+    quality: "good",
+    description:
+      "Google's Gemini 3.5 Flash via OpenRouter. Ultra-fast with strong coding capabilities.",
+    supportsVision: true,
+    maxOutputTokens: 16384,
+  },
 };
 
 /**
@@ -192,6 +207,22 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
  * GPT-4o Mini is the default — fast, affordable, and reliable.
  */
 export const DEFAULT_MODEL = "gpt-4o-mini";
+
+/**
+ * OpenRouter model ID fallback mapping.
+ * Used when direct provider API keys are missing but OpenRouter API key is configured.
+ */
+const OPENROUTER_FALLBACK_MAP: Record<string, string> = {
+  "claude-sonnet-4-5": "anthropic/claude-3.7-sonnet",
+  "claude-haiku-3-5": "anthropic/claude-3.5-haiku",
+  "gpt-4o": "openai/gpt-4o",
+  "gpt-4o-mini": "openai/gpt-4o-mini",
+  "gemini-2-flash": "google/gemini-2.0-flash",
+  "gemini-2-pro": "google/gemini-2.0-pro-exp-02-05",
+  "deepseek-v3": "deepseek/deepseek-chat",
+  "deepseek-r1": "deepseek/deepseek-r1",
+  "gemini-3-5-flash": "google/gemini-3.5-flash",
+};
 
 /**
  * Returns an AI SDK LanguageModel instance for the given model ID.
@@ -211,6 +242,23 @@ export function getModel(model: string, env: Env): LanguageModel {
   const config = MODEL_REGISTRY[model];
   if (!config) throw new Error(`Unknown model: ${model}`);
 
+  // Auto-fallback to OpenRouter if the direct provider key is missing but the OpenRouter key is present
+  const isDirectKeyMissing =
+    (config.provider === "anthropic" && !env.ANTHROPIC_API_KEY) ||
+    (config.provider === "openai" && !env.OPENAI_API_KEY) ||
+    (config.provider === "google" && !env.GOOGLE_AI_API_KEY) ||
+    (config.provider === "deepseek" && !env.DEEPSEEK_API_KEY);
+
+  if (isDirectKeyMissing && env.OPENROUTER_API_KEY) {
+    const fallbackModelId = OPENROUTER_FALLBACK_MAP[model] || config.apiModelId;
+    console.log(`[ai] Direct API key for provider "${config.provider}" is missing. Routing "${model}" via OpenRouter fallback to "${fallbackModelId}".`);
+    const openrouter = createOpenAI({
+      apiKey: env.OPENROUTER_API_KEY,
+      baseURL: "https://openrouter.ai/api/v1",
+    });
+    return openrouter.chat(fallbackModelId);
+  }
+
   switch (config.provider) {
     case "anthropic":
       return createAnthropic({ apiKey: env.ANTHROPIC_API_KEY })(config.apiModelId);
@@ -224,7 +272,6 @@ export function getModel(model: string, env: Env): LanguageModel {
       const openrouter = createOpenAI({
         apiKey: env.OPENROUTER_API_KEY,
         baseURL: "https://openrouter.ai/api/v1",
-        compatibility: "compatible",
       });
       return openrouter.chat(config.apiModelId);
     }

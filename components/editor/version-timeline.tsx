@@ -229,10 +229,18 @@ export function VersionTimeline({
                 </div>
 
                 {/* Version card */}
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onViewVersion(version.versionNumber)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onViewVersion(version.versionNumber);
+                    }
+                  }}
                   className={cn(
-                    "group mb-4 flex-1 cursor-pointer rounded-lg border p-3 text-left transition-all duration-150",
+                    "group mb-4 flex-1 cursor-pointer rounded-lg border p-3 text-left transition-all duration-150 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
                     isViewing
                       ? "border-blue-500/50 bg-blue-500/5"
                       : isCurrent
@@ -338,7 +346,7 @@ export function VersionTimeline({
                       </Button>
                     </div>
                   )}
-                </button>
+                </div>
               </div>
             );
           })}
