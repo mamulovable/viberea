@@ -169,6 +169,18 @@ export const MODELS: ModelInfo[] = [
       "Google's Gemini 3.5 Flash via OpenRouter. Ultra-fast with strong coding capabilities.",
     supportsVision: true,
   },
+    {
+        id: "gemini-3-1-flash-lite",
+        name: "Gemini 3.1 Flash Lite",
+        provider: "google",
+        tier: "fast",
+        speed: "very-fast",
+        quality: "good",
+        creditCost: 1,
+        description:
+          "Google's Gemini 3.1 Flash Lite via OpenRouter. Ultra-fast, lightweight model for quick coding tasks.",
+        supportsVision: true,
+    },
 ];
 
 /**

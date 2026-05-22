@@ -200,6 +200,18 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
     supportsVision: true,
     maxOutputTokens: 16384,
   },
+  "gemini-3-1-flash-lite": {
+    provider: "openrouter",
+    displayName: "Gemini 3.1 Flash Lite",
+    apiModelId: "google/gemini-3.1-flash-lite",
+    creditCost: 1,
+    tier: "fast",
+    speed: "very-fast",
+    quality: "good",
+    description: "Google's Gemini 3.1 Flash Lite via OpenRouter. Ultra-fast, lightweight model for quick coding tasks.",
+    supportsVision: true,
+    maxOutputTokens: 16384,
+  }
 };
 
 /**
