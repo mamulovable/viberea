@@ -36,7 +36,9 @@ import type { DeviceMode } from "./device-toggle";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Eye, RotateCcw, ArrowLeft } from "lucide-react";
+import { Eye, RotateCcw, ArrowLeft, Code2, MessageSquare, ExternalLink, Loader2 } from "lucide-react";
+import { openInCodeSandbox } from "@/lib/codesandbox";
+import { toast } from "sonner";
 
 /**
  * Props for the EditorLayout component.
@@ -140,11 +142,22 @@ export function EditorLayout({
   /** Register keyboard shortcuts (Cmd+P toggle, Cmd+B history) */
   useEditorShortcuts({ activeTab, onTabChange: setActiveTab });
   const [isDragging, setIsDragging] = useState(false);
-  /**
-   * Mobile-only panel toggle: "chat" shows chat, "content" shows preview/code.
-   * On desktop both are always visible side by side.
-   */
-  const [mobilePanel, setMobilePanel] = useState<"chat" | "content">("chat");
+  
+  /** Lifted sandbox preview state and handler */
+  const [isOpeningPreview, setIsOpeningPreview] = useState(false);
+  const handleOpenPreview = useCallback(async () => {
+    setIsOpeningPreview(true);
+    try {
+      await openInCodeSandbox(files);
+    } catch {
+      toast.error("Failed to open preview. Try again.");
+    } finally {
+      setIsOpeningPreview(false);
+    }
+  }, [files]);
+
+  /** Mobile navigation tab state: "history" (AI chat prompt history), "code", "preview" */
+  const [mobileTab, setMobileTab] = useState<"history" | "code" | "preview">("history");
   const containerRef = useRef<HTMLDivElement>(null);
 
   /**
@@ -230,8 +243,6 @@ export function EditorLayout({
         files={files}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        mobilePanel={mobilePanel}
-        onMobilePanelChange={setMobilePanel}
         projectId={projectId}
         userPlan={userPlan}
         creditsRemaining={creditsRemaining}
@@ -240,6 +251,8 @@ export function EditorLayout({
         onDelete={onDelete}
         deviceMode={deviceMode}
         onDeviceModeChange={setDeviceMode}
+        isOpeningPreview={isOpeningPreview}
+        onOpenPreview={handleOpenPreview}
       />
 
       {/* Version viewing banner — shown when browsing an old version */}
@@ -392,13 +405,13 @@ export function EditorLayout({
         </div>
       </div>
 
-      {/* === Mobile layout: Chat or Preview only (<md), no code editor === */}
-      <div className="flex flex-1 overflow-hidden md:hidden">
-        {/* Chat panel — visible when mobilePanel is "chat" */}
+      {/* === Mobile layout: Chat/History, Code, or Preview switcher (<md) === */}
+      <div className="flex flex-1 overflow-hidden md:hidden pb-20">
+        {/* Chat / History Panel — visible when mobileTab is "history" */}
         <div
           className={cn(
             "h-full w-full",
-            mobilePanel === "chat" ? "block" : "hidden"
+            mobileTab === "history" ? "block" : "hidden"
           )}
         >
           <ChatPanel
@@ -410,20 +423,93 @@ export function EditorLayout({
             selectedModelId={selectedModelId}
             onModelChange={onModelChange}
             userPlan={userPlan}
-
           />
         </div>
 
-        {/* Preview panel — visible when mobilePanel is "content" */}
+        {/* Code Editor Panel — visible when mobileTab is "code" */}
         <div
           className={cn(
             "h-full w-full",
-            mobilePanel === "content" ? "block" : "hidden"
+            mobileTab === "code" ? "block" : "hidden"
+          )}
+        >
+          <PanelErrorBoundary name="Code Editor">
+            {codeEditorPanel}
+          </PanelErrorBoundary>
+        </div>
+
+        {/* Preview Panel — visible when mobileTab is "preview" */}
+        <div
+          className={cn(
+            "h-full w-full",
+            mobileTab === "preview" ? "block" : "hidden"
           )}
         >
           <PanelErrorBoundary name="Preview">
             {previewPanel}
           </PanelErrorBoundary>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Navigation Bar (<md only) */}
+      <div className="fixed bottom-5 left-4 right-4 z-50 md:hidden max-w-md mx-auto">
+        <div className="flex h-16 items-center justify-around rounded-2xl border border-border/50 bg-background/85 px-2 py-1 shadow-lg shadow-black/10 backdrop-blur-md">
+          {/* History tab button */}
+          <button
+            onClick={() => setMobileTab("history")}
+            className={cn(
+              "flex flex-col items-center justify-center gap-1 rounded-xl px-4 py-1.5 transition-all duration-200 cursor-pointer active:scale-95",
+              mobileTab === "history"
+                ? "text-primary bg-primary/10 scale-105 font-semibold"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+            )}
+          >
+            <MessageSquare className="size-5" />
+            <span className="text-[10px] font-medium">History</span>
+          </button>
+
+          {/* Code tab button */}
+          <button
+            onClick={() => setMobileTab("code")}
+            className={cn(
+              "flex flex-col items-center justify-center gap-1 rounded-xl px-4 py-1.5 transition-all duration-200 cursor-pointer active:scale-95",
+              mobileTab === "code"
+                ? "text-primary bg-primary/10 scale-105 font-semibold"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+            )}
+          >
+            <Code2 className="size-5" />
+            <span className="text-[10px] font-medium">Code</span>
+          </button>
+
+          {/* Preview tab button */}
+          <button
+            onClick={() => setMobileTab("preview")}
+            className={cn(
+              "flex flex-col items-center justify-center gap-1 rounded-xl px-4 py-1.5 transition-all duration-200 cursor-pointer active:scale-95",
+              mobileTab === "preview"
+                ? "text-primary bg-primary/10 scale-105 font-semibold"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+            )}
+          >
+            <Eye className="size-5" />
+            <span className="text-[10px] font-medium">Preview</span>
+          </button>
+
+          {/* Sandbox action button */}
+          <button
+            onClick={handleOpenPreview}
+            disabled={isOpeningPreview}
+            className="flex flex-col items-center justify-center gap-1 rounded-xl px-4 py-1.5 text-muted-foreground transition-all duration-200 hover:text-foreground hover:bg-secondary/40 disabled:opacity-50 cursor-pointer active:scale-95"
+            title="Open preview in sandbox"
+          >
+            {isOpeningPreview ? (
+              <Loader2 className="size-5 animate-spin text-primary" />
+            ) : (
+              <ExternalLink className="size-5" />
+            )}
+            <span className="text-[10px] font-medium">Sandbox</span>
+          </button>
         </div>
       </div>
     </div>

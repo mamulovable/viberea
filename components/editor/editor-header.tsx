@@ -67,8 +67,8 @@ export interface EditorHeaderProps {
   files: Record<string, string>;
   activeTab: EditorTabValue;
   onTabChange: (tab: EditorTabValue) => void;
-  mobilePanel: "chat" | "content";
-  onMobilePanelChange: (panel: "chat" | "content") => void;
+  mobilePanel?: "chat" | "content";
+  onMobilePanelChange?: (panel: "chat" | "content") => void;
   projectId: string;
   userPlan: "free" | "pro";
   creditsRemaining?: number;
@@ -77,6 +77,8 @@ export interface EditorHeaderProps {
   onDelete: () => void;
   deviceMode: DeviceMode;
   onDeviceModeChange: (mode: DeviceMode) => void;
+  isOpeningPreview?: boolean;
+  onOpenPreview?: () => void;
 }
 
 /**
@@ -92,12 +94,6 @@ const TABS = [
  * EditorHeader renders the full-width header bar above both panels.
  * Contains the logo/project info, tab switcher, and user actions.
  * Fully responsive — adapts layout for mobile screens.
- *
- * @param projectName - Displayed in the project dropdown trigger
- * @param activeTab - Which tab is currently active
- * @param onTabChange - Called when user clicks Preview or Code
- * @param mobilePanel - Current mobile panel ("chat" or "content")
- * @param onMobilePanelChange - Called when user switches mobile panel
  */
 export function EditorHeader({
   projectName,
@@ -114,18 +110,26 @@ export function EditorHeader({
   onDelete,
   deviceMode,
   onDeviceModeChange,
+  isOpeningPreview,
+  onOpenPreview,
 }: EditorHeaderProps) {
-  const [isOpeningPreview, setIsOpeningPreview] = useState(false);
+  const [localIsOpening, setLocalIsOpening] = useState(false);
+
+  const isOpening = isOpeningPreview !== undefined ? isOpeningPreview : localIsOpening;
 
   /** Creates a CodeSandbox sandbox and opens the live .csb.app URL directly */
   async function handleOpenPreview() {
-    setIsOpeningPreview(true);
+    if (onOpenPreview) {
+      onOpenPreview();
+      return;
+    }
+    setLocalIsOpening(true);
     try {
       await openInCodeSandbox(files);
     } catch {
       toast.error("Failed to open preview. Try again.");
     } finally {
-      setIsOpeningPreview(false);
+      setLocalIsOpening(false);
     }
   }
 
@@ -188,41 +192,8 @@ export function EditorHeader({
         </div>
       </div>
 
-      {/* Mobile: inline tabs with Chat + Preview (Code disabled on mobile) */}
-      <div className="mx-auto md:hidden">
-        <div className="flex items-center gap-0.5 rounded-full bg-secondary/60 p-0.5">
-          {/* Chat tab */}
-          <button
-            onClick={() => onMobilePanelChange("chat")}
-            className={cn(
-              "flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-150",
-              mobilePanel === "chat"
-                ? "bg-foreground text-background shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <MessageSquare className="size-3" />
-            Chat
-          </button>
-
-          {/* Preview tab */}
-          <button
-            onClick={() => {
-              onTabChange("preview");
-              onMobilePanelChange("content");
-            }}
-            className={cn(
-              "flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-150",
-              mobilePanel === "content"
-                ? "bg-foreground text-background shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <Eye className="size-3" />
-            Preview
-          </button>
-        </div>
-      </div>
+      {/* Mobile: Hidden middle switcher (handled by bottom navigation bar) */}
+      <div className="mx-auto md:hidden" />
 
       {/* === Right section: Device toggle + Export + User avatar === */}
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -241,11 +212,11 @@ export function EditorHeader({
           variant="outline"
           size="sm"
           onClick={handleOpenPreview}
-          disabled={isOpeningPreview}
+          disabled={isOpening}
           className="gap-1.5 text-xs"
           title="Open live preview in new tab"
         >
-          {isOpeningPreview ? (
+          {isOpening ? (
             <Loader2 className="size-3.5 animate-spin" />
           ) : (
             <ExternalLink className="size-3.5" />
