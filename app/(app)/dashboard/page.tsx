@@ -67,6 +67,23 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [initialPrompt, setInitialPrompt] = useState("");
+
+  // Check for initial prompt in URL query param
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const promptParam = searchParams.get("prompt");
+      if (promptParam) {
+        setInitialPrompt(promptParam);
+        setDialogOpen(true);
+        // Clean URL search parameters without page reload
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    }
+  }, []);
+
   /** ID of the project pending deletion (null = dialog closed) */
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
@@ -292,6 +309,7 @@ export default function DashboardPage() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSubmit={handleCreateProject}
+        initialDescription={initialPrompt}
       />
 
       {/* Rename project dialog */}

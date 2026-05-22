@@ -14,7 +14,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -67,11 +67,13 @@ export interface CreateProjectData {
  * @property open - Whether the dialog is currently visible
  * @property onOpenChange - Callback to toggle dialog visibility
  * @property onSubmit - Callback with form data when the user clicks "Create"
+ * @property initialDescription - Pre-filled starter description prompt
  */
 export interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateProjectData) => void;
+  initialDescription?: string;
 }
 
 /**
@@ -82,10 +84,18 @@ export function CreateProjectDialog({
   open,
   onOpenChange,
   onSubmit,
+  initialDescription = "",
 }: CreateProjectDialogProps) {
   const [name, setName] = useState("");
   const [model, setModel] = useState<string>(AI_MODELS[0].value);
   const [description, setDescription] = useState("");
+
+  // Prefill description when modal opens with initialDescription
+  useEffect(() => {
+    if (open && initialDescription) {
+      setDescription(initialDescription);
+    }
+  }, [open, initialDescription]);
 
   /**
    * Handles form submission. Validates name, calls onSubmit, and resets form.

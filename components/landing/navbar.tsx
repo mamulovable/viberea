@@ -25,15 +25,15 @@ import { Button } from "@/components/ui/button";
  */
 export function Navbar() {
   return (
-    <header className="fixed top-0 z-50 w-full">
+    <header className="fixed top-0 z-50 w-full bg-white/40 backdrop-blur-md border-b border-slate-200/40">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-lg font-semibold tracking-tight text-white"
+          className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-800 hover:text-slate-950 transition-colors"
         >
           <img src="/logo.svg" alt="" className="size-7" />
-          Lovable Clone
+          Viberea
         </Link>
 
         {/* Auth buttons */}
@@ -42,14 +42,14 @@ export function Navbar() {
             <Button
               variant="outline"
               size="sm"
-              className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:brightness-100"
+              className="border-slate-200/80 bg-white/60 text-slate-700 hover:bg-slate-50 hover:text-slate-950 hover:brightness-100"
               asChild
             >
               <Link href="/sign-in">Log in</Link>
             </Button>
             <Button
               size="sm"
-              className="bg-white text-black hover:bg-white/90"
+              className="bg-[#f15a24] hover:bg-[#d94814] text-white shadow-sm transition-all duration-150"
               asChild
             >
               <Link href="/sign-up">Get started</Link>
@@ -59,7 +59,7 @@ export function Navbar() {
           <SignedIn>
             <Button
               size="sm"
-              className="bg-white text-black hover:bg-white/90"
+              className="bg-[#f15a24] hover:bg-[#d94814] text-white shadow-sm transition-all duration-150"
               asChild
             >
               <Link href="/dashboard">Dashboard</Link>
