@@ -32,6 +32,7 @@ export interface ModelInfo {
   quality: "good" | "high";
   creditCost: number;
   description: string;
+  maxOutputTokens?: number;
   supportsVision: boolean;
 }
 
@@ -180,6 +181,7 @@ export const MODELS: ModelInfo[] = [
         description:
           "Google's Gemini 3.1 Flash Lite via OpenRouter. Ultra-fast, lightweight model for quick coding tasks.",
         supportsVision: true,
+        maxOutputTokens: 8192,
     },
 ];
 

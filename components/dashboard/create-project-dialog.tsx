@@ -44,6 +44,7 @@ const AI_MODELS = [
   { value: "gemini-2-flash", label: "Gemini 2.0 Flash" },
   { value: "gemini-2-pro", label: "Gemini 2.0 Pro" },
   { value: "gemini-3-5-flash", label: "Gemini 3.5 Flash" },
+  { value: "gemini-3-1-flash-lite", label: "Gemini 3.1 Flash Lite" },
   { value: "claude-sonnet-4-5", label: "Claude Sonnet 4.5" },
   { value: "claude-haiku-3-5", label: "Claude Haiku 3.5" },
   { value: "deepseek-v3", label: "DeepSeek V3" },
