@@ -219,7 +219,7 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
  * Default model used when no model is specified.
  * GPT-4o Mini is the default — fast, affordable, and reliable.
  */
-export const DEFAULT_MODEL = "gpt-4o-mini";
+export const DEFAULT_MODEL = "gemini-3-1-flash-lite";
 
 /**
  * OpenRouter model ID fallback mapping.

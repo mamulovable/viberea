@@ -188,7 +188,7 @@ export const MODELS: ModelInfo[] = [
 /**
  * Default model ID used when none is specified.
  */
-export const DEFAULT_MODEL_ID = "gpt-4o-mini";
+export const DEFAULT_MODEL_ID = "gemini-3-1-flash-lite";
 
 /**
  * Provider display names for section headers in the model selector.
