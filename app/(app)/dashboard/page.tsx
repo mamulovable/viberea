@@ -67,22 +67,6 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [initialPrompt, setInitialPrompt] = useState("");
-
-  // Check for initial prompt in URL query param
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const searchParams = new URLSearchParams(window.location.search);
-      const promptParam = searchParams.get("prompt");
-      if (promptParam) {
-        setInitialPrompt(promptParam);
-        setDialogOpen(true);
-        // Clean URL search parameters without page reload
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
-      }
-    }
-  }, []);
 
   /** ID of the project pending deletion (null = dialog closed) */
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
@@ -192,6 +176,75 @@ export default function DashboardPage() {
       toast.error(message);
     }
   }
+
+  // Helper to dynamically auto-generate a clean, descriptive project name based on the description
+  function generateProjectName(promptText: string): string {
+    const cleanPrompt = promptText.trim();
+    
+    // 1. Check if it matches any of our predefined sample prompts
+    const predefinedNames: Record<string, string> = {
+      "A modern SaaS analytics dashboard with interactive revenue charts, a user management grid, status badges, dark mode toggle, and responsive sidebar navigation.": "Reporting Dashboard",
+      "A retro-themed arcade hub featuring a fully playable classic Snake game, real-time score tracking, audio effect simulator, and neon glow aesthetics.": "Gaming Platform",
+      "An interactive employee onboarding portal with a multi-step checklist, progress indicator, profile setup form, document uploader, and celebratory confetti animation.": "Onboarding Portal",
+      "A creative 2D room planner with drag-and-drop furniture, interactive wall color picker, hardwood vs carpet toggle, and layout saving.": "Room Visualizer",
+      "A developer matching platform featuring interactive swipe cards, language-based match filters, clean profile layouts, and a simulated direct message simulator.": "Networking App"
+    };
+    
+    for (const [samplePrompt, name] of Object.entries(predefinedNames)) {
+      if (cleanPrompt.toLowerCase().includes(samplePrompt.toLowerCase()) || samplePrompt.toLowerCase().includes(cleanPrompt.toLowerCase())) {
+        return name;
+      }
+    }
+
+    // 2. Try to extract the first 3 clean words from custom input
+    let temp = cleanPrompt
+      .replace(/^(create|build|design|make|generate)\s+(a|an|the|me\s+a|me\s+an)?/i, "")
+      .replace(/^(a|an|the|beautiful|modern|premium|interactive|simple)\s+/i, "")
+      .trim();
+
+    // Capitalize first letter
+    if (temp.length > 0) {
+      temp = temp.charAt(0).toUpperCase() + temp.slice(1);
+    }
+
+    const words = temp.split(/\s+/).slice(0, 3);
+    if (words.length > 0 && words[0].length > 1) {
+      const candidate = words.join(" ").replace(/[^a-zA-Z0-9\s-]/g, "").trim();
+      if (candidate.length > 3 && candidate.length < 30) {
+        return candidate;
+      }
+    }
+
+    // 3. Fallback to AI App with dynamic random suffix
+    const randomSuffix = Math.random().toString(36).substring(2, 5).toUpperCase();
+    return `AI App-${randomSuffix}`;
+  }
+
+  // Instantly auto-creates the project if arriving from the landing page prompt
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const promptParam = searchParams.get("prompt");
+      if (promptParam) {
+        // Clean URL parameters immediately to prevent multiple triggers
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+
+        const autoName = generateProjectName(promptParam);
+        
+        toast.info(`Auto-generating project "${autoName}"...`, {
+          duration: 3000,
+        });
+
+        // Trigger project creation with default Gemini 3.1 Flash Lite model
+        handleCreateProject({
+          name: autoName,
+          model: "gemini-3-1-flash-lite",
+          description: promptParam,
+        });
+      }
+    }
+  }, [getToken, router]);
 
   /**
    * Opens the rename dialog for a project, pre-filling its current name.
@@ -309,7 +362,6 @@ export default function DashboardPage() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSubmit={handleCreateProject}
-        initialDescription={initialPrompt}
       />
 
       {/* Rename project dialog */}
