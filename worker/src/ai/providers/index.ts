@@ -228,9 +228,9 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
 
 /**
  * Default model used when no model is specified.
- * GPT-4o Mini is the default — fast, affordable, and reliable.
+ * MiniMax M2.7 is the default — extremely fast and capable.
  */
-export const DEFAULT_MODEL = "gemini-3-1-flash-lite";
+export const DEFAULT_MODEL = "minimax-m2-7";
 
 /**
  * OpenRouter model ID fallback mapping.

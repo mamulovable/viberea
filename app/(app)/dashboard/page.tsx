@@ -236,10 +236,10 @@ export default function DashboardPage() {
           duration: 3000,
         });
 
-        // Trigger project creation with default Gemini 3.1 Flash Lite model
+        // Trigger project creation with default MiniMax M2.7 model
         handleCreateProject({
           name: autoName,
-          model: "gemini-3-1-flash-lite",
+          model: "minimax-m2-7",
           description: promptParam,
         });
       }
