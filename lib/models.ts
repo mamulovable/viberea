@@ -26,7 +26,7 @@
 export interface ModelInfo {
   id: string;
   name: string;
-  provider: "anthropic" | "openai" | "google" | "deepseek" | "zhipuai";
+  provider: "anthropic" | "openai" | "google" | "deepseek" | "zhipuai" | "openrouter";
   tier: "fast" | "premium";
   speed: "very-fast" | "fast" | "medium";
   quality: "good" | "high";
@@ -183,12 +183,24 @@ export const MODELS: ModelInfo[] = [
         supportsVision: true,
         maxOutputTokens: 8192,
     },
+    {
+      id: "minimax-m2-7",
+      name: "MiniMax M2.7",
+      provider: "openrouter",
+      tier: "fast",
+      speed: "very-fast",
+      quality: "good",
+      creditCost: 1,
+      description: "MiniMax M2.7 via OpenRouter. Extremely fast and highly capable model.",
+      supportsVision: false,
+      maxOutputTokens: 8192,
+    },
 ];
 
 /**
  * Default model ID used when none is specified.
  */
-export const DEFAULT_MODEL_ID = "gemini-3-1-flash-lite";
+export const DEFAULT_MODEL_ID = "minimax-m2-7";
 
 /**
  * Provider display names for section headers in the model selector.
@@ -199,14 +211,15 @@ export const PROVIDER_LABELS: Record<string, string> = {
   google: "Google",
   deepseek: "DeepSeek",
   zhipuai: "ZhipuAI",
+  openrouter: "OpenRouter",
 };
 
 /**
  * Provider ordering for the model selector dropdown.
  */
 export const PROVIDER_ORDER: Array<
-  "anthropic" | "openai" | "google" | "deepseek" | "zhipuai"
-> = ["anthropic", "openai", "google", "deepseek", "zhipuai"];
+  "anthropic" | "openai" | "google" | "deepseek" | "zhipuai" | "openrouter"
+> = ["anthropic", "openai", "google", "deepseek", "zhipuai", "openrouter"];
 
 /**
  * Returns the speed label for a given speed value.

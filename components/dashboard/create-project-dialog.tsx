@@ -39,6 +39,7 @@ import {
  * Each entry has a machine-readable value and a human-readable label.
  */
 const AI_MODELS = [
+  { value: "minimax-m2-7", label: "MiniMax M2.7" },
   { value: "gemini-3-1-flash-lite", label: "Gemini 3.1 Flash Lite" },
   { value: "gpt-4o-mini", label: "GPT-4o Mini" },
   { value: "gpt-4o", label: "GPT-4o" },

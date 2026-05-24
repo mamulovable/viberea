@@ -211,7 +211,18 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
     description: "Google's Gemini 3.1 Flash Lite via OpenRouter. Ultra-fast, lightweight model for quick coding tasks.",
     supportsVision: true,
     maxOutputTokens: 8192,
-
+  },
+  "minimax-m2-7": {
+    provider: "openrouter",
+    displayName: "MiniMax M2.7",
+    apiModelId: "minimax/minimax-m2.7",
+    creditCost: 1,
+    tier: "fast",
+    speed: "very-fast",
+    quality: "good",
+    description: "MiniMax M2.7 via OpenRouter. Extremely fast and highly capable model.",
+    supportsVision: false,
+    maxOutputTokens: 8192,
   }
 };
 
