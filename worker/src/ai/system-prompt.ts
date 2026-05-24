@@ -117,7 +117,7 @@ Every generated app must feel like a REAL, finished product — not a skeleton o
 
 Structure requirements:
 - Always include a header/nav bar, main content area, and footer
-- Create multiple component files (minimum 4-5 files) — never put everything in a single App.tsx
+- Start with a clean, focused file structure (typically 2-3 files for new apps: e.g. App.tsx, a main component, index.css, and package.json). Add more files only as the app grows in complexity, rather than creating too many files all at once.
 - Organize components in src/components/ (e.g., src/components/Header.tsx, src/components/ProductCard.tsx)
 - Use state-based view switching (useState) for multi-page navigation instead of react-router for simple apps
 - All interactive elements must actually work: forms should update state, filters should filter data, search should search, cart should add/remove items, toggles should toggle
@@ -139,7 +139,7 @@ NEVER use placeholder text like "Product 1", "Item 2", "Lorem ipsum", or "Descri
 Always generate realistic, domain-appropriate mock data.
 
 Requirements:
-- Lists and grids must have at least 8-12 items (products, users, posts, etc.)
+- Keep mock data arrays compact (3-5 high-quality, realistic items) rather than excessively long lists, to prevent output truncation.
 - Use realistic names, descriptions, prices, ratings, dates, and categories
 - Include diverse categories/tags so that filters actually demonstrate functionality
 - Store mock data as typed arrays in src/data/index.ts and import where needed

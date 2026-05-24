@@ -73,6 +73,18 @@ export function ChatPanel({
   const selectedModel = getModelById(selectedModelId);
   const supportsVision = selectedModel?.supportsVision ?? false;
 
+  // Check if the last assistant message is truncated (has an unclosed <file> tag)
+  const lastMessage = messages[messages.length - 1];
+  const isLastMessageTruncated =
+    !isStreaming &&
+    lastMessage &&
+    lastMessage.role === "assistant" &&
+    (() => {
+      const openCount = (lastMessage.content.match(/<file\s+path="[^"]+">/g) || []).length;
+      const closeCount = (lastMessage.content.match(/<\/file>/g) || []).length;
+      return openCount > closeCount;
+    })();
+
   /**
    * Auto-scroll to the bottom of the message list
    * whenever messages change or streaming content updates.
@@ -156,6 +168,20 @@ export function ChatPanel({
       {/* Model selector + Chat input — at the bottom */}
       {!isCreditsExhausted && (
         <div className="border-t border-border/50 bg-card/50 backdrop-blur-sm">
+          {/* Continue generation suggestion button */}
+          {isLastMessageTruncated && (
+            <div className="px-3 pt-2">
+              <button
+                type="button"
+                onClick={() => onSendMessage("Continue writing the code")}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary shadow-sm transition-all hover:bg-primary/10 hover:border-primary/50 active:scale-[0.99] animate-in fade-in slide-in-from-bottom-2 duration-200"
+              >
+                <Sparkles className="size-3.5 animate-pulse text-primary" />
+                <span>Continue Code Generation</span>
+              </button>
+            </div>
+          )}
+
           {/* Model selector — sits above the input */}
           <div className="px-3 pt-2">
             <ModelSelector

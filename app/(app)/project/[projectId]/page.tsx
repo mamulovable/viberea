@@ -139,6 +139,94 @@ function recordToFiles(record: Record<string, string>): ProjectFile[] {
 }
 
 /**
+ * Synthesizes a premium, clean dual-tone sound chime for successful generations
+ * using the Web Audio API (client-side only).
+ */
+function playSuccessSound() {
+  if (typeof window === "undefined") return;
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+
+    // Soft chime: C5 (523.25 Hz) then E5 (659.25 Hz)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(523.25, now);
+    gain1.gain.setValueAtTime(0, now);
+    gain1.gain.linearRampToValueAtTime(0.12, now + 0.04);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(659.25, now + 0.08);
+    gain2.gain.setValueAtTime(0, now + 0.08);
+    gain2.gain.linearRampToValueAtTime(0.12, now + 0.12);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+
+    osc1.start(now);
+    osc1.stop(now + 0.45);
+    osc2.start(now + 0.08);
+    osc2.stop(now + 0.53);
+  } catch (err) {
+    console.error("Failed to play success sound:", err);
+  }
+}
+
+/**
+ * Synthesizes a soft, clean error double warning beep (A3 then F3)
+ * using the Web Audio API (client-side only).
+ */
+function playErrorSound() {
+  if (typeof window === "undefined") return;
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+
+    // Softer double-tone: A3 (220 Hz) then F3 (174.61 Hz)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "triangle"; // Softer than sine for warning
+    osc1.frequency.setValueAtTime(220, now);
+    gain1.gain.setValueAtTime(0, now);
+    gain1.gain.linearRampToValueAtTime(0.08, now + 0.04);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(174.61, now + 0.12);
+    gain2.gain.setValueAtTime(0, now + 0.12);
+    gain2.gain.linearRampToValueAtTime(0.08, now + 0.16);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.47);
+
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+
+    osc1.start(now);
+    osc1.stop(now + 0.4);
+    osc2.start(now + 0.12);
+    osc2.stop(now + 0.52);
+  } catch (err) {
+    console.error("Failed to play error sound:", err);
+  }
+}
+
+/**
  * EditorPage is the main page component for the project editor.
  * Fetches project data on mount, manages all editor state,
  * and renders the EditorLayout with panels.
@@ -719,10 +807,20 @@ export default function EditorPage({
             }
           }
         }
+
+        // Loop finished successfully! Play success sound if user-initiated.
+        if (!isAutoHeal) {
+          playSuccessSound();
+        }
       } catch (error) {
         // Handle network or auth errors
         const errorMessage =
           error instanceof Error ? error.message : "Something went wrong";
+
+        // Play error sound for failed generations if user-initiated.
+        if (!isAutoHeal) {
+          playErrorSound();
+        }
 
         // Fallback: detect rate limit from error message when the 429 response
         // couldn't be parsed (e.g. CORS error, body parse failure)
