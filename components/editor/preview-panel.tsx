@@ -181,12 +181,12 @@ function ErrorListener({ onError }: { onError: (error: { message: string }) => v
 }
 
 /**
- * "Built with Lovable" badge shown in the Sandpack preview actions bar.
+ * "Built with Dreamera" badge shown in the Sandpack preview actions bar.
  * Uses inline styles instead of Tailwind because Sandpack's CSS-in-JS
  * (stitches) applies scoped styles with high specificity that override
  * Tailwind utility classes. React state drives the hover effect.
  */
-function LovableBadge() {
+function DreameraBadge() {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -211,8 +211,8 @@ function LovableBadge() {
         border: `1px solid ${hovered ? "rgba(255,255,255,0.15)" : "transparent"}`,
       }}
     >
-      <img src="/logo.svg" alt="" style={{ width: 14, height: 14 }} />
-      Built with Lovable
+      <img src="/logo.png" alt="" style={{ width: 14, height: 14 }} />
+      Built with Dreamera
     </a>
   );
 }
@@ -254,7 +254,7 @@ export function PreviewPanel({ files, onError }: PreviewPanelProps) {
             showNavigator
             showRefreshButton
             showOpenInCodeSandbox={false}
-            actionsChildren={<LovableBadge />}
+            actionsChildren={<DreameraBadge />}
             style={{ height: "100%" }}
           />
         </SandpackLayout>

@@ -144,8 +144,8 @@ export function EditorHeader({
           aria-label="Go to dashboard"
         >
           <img
-            src="/logo.svg"
-            alt="Lovable Clone"
+            src="/logo.png"
+            alt="Dreamera"
             className="size-6 sm:size-7"
           />
         </Link>

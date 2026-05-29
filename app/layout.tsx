@@ -47,13 +47,37 @@ const geistMono = Geist_Mono({
  * Individual pages can override these with their own metadata exports.
  */
 export const metadata: Metadata = {
-  title: "Lovable Clone — AI-Powered Web App Builder",
+  title: "Dreamera — AI-Powered Web App Builder",
   description:
     "Describe your app idea in plain English and get a working React application with live preview. Powered by Claude, GPT-4o, Gemini, and DeepSeek.",
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.png", type: "image/png" },
     ],
+    apple: [
+      { url: "/icon.png", type: "image/png" },
+    ],
+  },
+  openGraph: {
+    title: "Dreamera — AI-Powered Web App Builder",
+    description:
+      "Describe your app idea in plain English and get a working React application with live preview. Powered by Claude, GPT-4o, Gemini, and DeepSeek.",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Dreamera — AI-Powered Web App Builder",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dreamera — AI-Powered Web App Builder",
+    description:
+      "Describe your app idea in plain English and get a working React application with live preview. Powered by Claude, GPT-4o, Gemini, and DeepSeek.",
+    images: ["/twitter-image.png"],
   },
 };
 

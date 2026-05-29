@@ -32,8 +32,8 @@ export function Navbar() {
           href="/"
           className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-800 hover:text-slate-950 transition-colors"
         >
-          <img src="/logo.svg" alt="" className="size-7" />
-          Viberea
+          <img src="/logo.png" alt="" className="size-7" />
+          Dreamera
         </Link>
 
         {/* Auth buttons */}

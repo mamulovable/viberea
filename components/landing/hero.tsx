@@ -61,7 +61,7 @@ export function Hero() {
 
         {/* Subtitle */}
         <p className="mt-4 text-lg text-slate-600 max-w-xl font-medium leading-relaxed">
-          Viberea lets you build fully-functional apps in minutes with just your words. No coding necessary.
+          Dreamera lets you build fully-functional apps in minutes with just your words. No coding necessary.
         </p>
 
         {/* Premium Interactive Input Card */}
@@ -135,7 +135,7 @@ export function Hero() {
                     </button>
                     {showTooltip && (
                       <div className="absolute bottom-8 left-1/2 z-50 w-64 -translate-x-1/2 rounded-xl bg-slate-900 p-3 text-left text-[11px] leading-relaxed text-slate-200 shadow-xl border border-slate-800">
-                        When <strong className="text-white">Plan</strong> is enabled, Viberea outlines a detailed step-by-step layout of modifications and designs for your approval before building, ensuring maximum precision.
+                        When <strong className="text-white">Plan</strong> is enabled, Dreamera outlines a detailed step-by-step layout of modifications and designs for your approval before building, ensuring maximum precision.
                       </div>
                     )}
                   </div>

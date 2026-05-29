@@ -108,8 +108,8 @@ export default function AppLayout({
             href="/dashboard"
             className="flex items-center gap-2 text-lg font-semibold tracking-tight"
           >
-            <img src="/logo.svg" alt="" className="size-7" />
-            Lovable Clone
+            <img src="/logo.png" alt="" className="size-7" />
+            Dreamera
           </Link>
           <Button
             variant="ghost"
@@ -174,8 +174,8 @@ export default function AppLayout({
             <Menu className="size-5" />
           </Button>
           <span className="flex items-center gap-2 text-sm font-semibold">
-            <img src="/logo.svg" alt="" className="size-5" />
-            Lovable Clone
+            <img src="/logo.png" alt="" className="size-5" />
+            Dreamera
           </span>
         </header>
 

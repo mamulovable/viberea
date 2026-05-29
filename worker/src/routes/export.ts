@@ -334,7 +334,7 @@ function generateIndexHtml(projectName: string): string {
 function generateReadme(projectName: string): string {
   return `# ${projectName}
 
-Built with [Lovable Clone](https://lovable-clone.dev) — AI-powered web app builder.
+Built with [Dreamera](https://dreamera.dev) — AI-powered web app builder.
 
 ## Getting Started
 
