@@ -15,12 +15,14 @@
  */
 
 import { Navbar, Hero } from "@/components/landing";
+import { MigrationPopup } from "@/components/migration-popup";
 
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       <Navbar />
       <Hero />
+      <MigrationPopup />
     </div>
   );
 }

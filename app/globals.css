@@ -223,6 +223,25 @@
 }
 
 /**
+ * Scale-in animation for popup modals.
+ * Creates a smooth grow effect from the center.
+ */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/**
  * Shimmer animation for the AI "Thinking" state.
  * Slides a translucent gradient across the element.
  */
